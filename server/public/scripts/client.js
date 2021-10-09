@@ -1,3 +1,5 @@
+
+
 $(document).ready(OnReady);
   
 function OnReady(){
@@ -5,6 +7,7 @@ function OnReady(){
     getTasks ();
     $('#addButton').on('click', add);
     $('#taskOut').on('click', '.deleteTaskButton', deleteTask)
+    $('#taskOut').on('click', '.completeTaskButton', completeTask)
 
 
 
@@ -43,6 +46,20 @@ function add(){
 } //end add
 
 
+function completeTask(){
+    console.log( 'in taskList:', $( this ).data( 'id' ) );
+    $.ajax({
+        method: 'PUT',
+        url: '/taskList?id=' + $( this ).data( 'id' ),
+    }).then( function( response ){
+        console.log( 'back from update:', response );
+        getTasks();
+    }).catch( function( err ){
+        console.log( err );
+        alert( 'error updating task' );
+    })
+}
+
 // delete 
 function deleteTask(){
     console.log( 'in taskList:', $( this ).data( 'id' ) );
@@ -70,12 +87,28 @@ function getTasks(){
     }).then( function( response ){
         console.log( 'back from get with:', response );
         // display on DOM
-        
+       
         
         let el = $( '#taskOut' );
         el.empty();
         for( let i=0; i<response.length; i++ ){
-            el.append( `<li>${response[i].task}     <button type ="button" class = "deleteTaskButton" data-id="${ response[i].id }" >Remove</button></li>`)
+            let appendCode = '';
+            
+            if( response[i].done ){
+                //task is complete
+               appendCode += `<li>${response[i].task}     <button type ="button" class = "deleteTaskButton" data-id="${ response[i].id }" >Remove</button></li>`
+
+            }else{
+
+                //task is not complete
+                appendCode += `<li>${response[i].task}     <button type ="button" class = "completeTaskButton" data-id="${ response[i].id }" >complete?</button>
+                <button type ="button" class = "deleteTaskButton" data-id="${ response[i].id }" >Remove</button></li>`
+
+            }
+            el.append(appendCode)
+
+
+            
         }
     }).catch( function( err ){
         console.log( err );

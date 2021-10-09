@@ -20,9 +20,10 @@ app.listen(PORT, ()=>{
 //routes
 
 app.get('/taskList', (req, res)=>{
-    const queryString = `SELECT * FROM tasklist`;
+    const queryString = `SELECT * FROM tasklist ORDER BY id`;
     pool.query( queryString ).then( (results)=> {
-      res.send(results.rows );
+      console.log(results.rows);
+        res.send(results.rows );
     }).catch( (err )=>{
       console.log( err);
       res.sendStatus( 500);
@@ -53,3 +54,14 @@ app.delete( '/taskList', ( req, res )=>{
     })
 })
 
+
+app.put( '/taskList', ( req, res )=>{
+    console.log( '/taskList PUT hit:', req.query );
+    const queryString = `UPDATE "tasklist" SET done=true WHERE id=${ req.query.id };`;
+    pool.query( queryString ).then( ( results )=>{
+        res.sendStatus( 200 );
+    }).catch( ( err )=>{
+        console.log( err );
+        res.sendStatus( 500 );
+    })
+})
