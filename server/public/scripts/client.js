@@ -4,34 +4,11 @@ function OnReady(){
     console.log('JQ');
     getTasks ();
     $('#addButton').on('click', add);
+    $('#taskOut').on('click', '.deleteTaskButton', deleteTask)
 
 
 
 } // end doc ready
-
-function getTasks(){
-    console.log('in getTasks');
-
-    $.ajax({
-        method: 'GET',
-        url: '/taskList'
-    }).then( function( response ){
-        console.log( 'back from get with:', response );
-        // display on DOM
-        
-        
-        let el = $( '#taskOut' );
-        el.empty();
-        for( let i=0; i<response.length; i++ ){
-            el.append( `<li>${response[i].task}</li>`)
-        }
-    }).catch( function( err ){
-        console.log( err );
-        alert( 'oops!' );
-    })
-
-
-}
 
 function add(){
     console.log('in add');
@@ -64,3 +41,47 @@ function add(){
 
 
 } //end add
+
+
+// delete 
+function deleteTask(){
+    console.log( 'in taskList:', $( this ).data( 'id' ) );
+    $.ajax({
+        method: 'DELETE',
+        url: '/taskList?id=' + $( this ).data( 'id' ),
+    }).then( function( response ){
+        console.log( 'back from delete:', response );
+        getTasks();
+    }).catch( function( err ){
+        console.log( err );
+        alert( 'error deleting task' );
+    })
+
+}// end deletetask
+
+
+
+function getTasks(){
+    console.log('in getTasks');
+
+    $.ajax({
+        method: 'GET',
+        url: '/taskList'
+    }).then( function( response ){
+        console.log( 'back from get with:', response );
+        // display on DOM
+        
+        
+        let el = $( '#taskOut' );
+        el.empty();
+        for( let i=0; i<response.length; i++ ){
+            el.append( `<li>${response[i].task}     <button type ="button" class = "deleteTaskButton" data-id="${ response[i].id }" >Remove</button></li>`)
+        }
+    }).catch( function( err ){
+        console.log( err );
+        alert( 'oops!' );
+    })
+
+
+} // end getTasks
+

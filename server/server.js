@@ -41,3 +41,15 @@ app.post('/taskList', (req, res)=>{
     })
 
 })
+
+app.delete( '/taskList', ( req, res )=>{
+    console.log( '/taskList delete hit:', req.query );
+    const queryString =`DELETE FROM tasklist WHERE id='${ req.query.id }';`;
+    pool.query( queryString ).then( ( results )=>{
+        res.sendStatus( 200 );
+    }).catch( ( err )=>{
+        console.log( err );
+        res.sendStatus( 500 );
+    })
+})
+
