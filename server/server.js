@@ -57,7 +57,14 @@ app.delete( '/taskList', ( req, res )=>{
 
 app.put( '/taskList', ( req, res )=>{
     console.log( '/taskList PUT hit:', req.query );
-    const queryString = `UPDATE "tasklist" SET done=true WHERE id=${ req.query.id };`;
+    console.log(req.body.done);
+    let queryString = '';
+    //if statement gets data from client to toggle complete to incomplete
+    if (req.body.done === "true"){
+       queryString = `UPDATE "tasklist" SET done=false WHERE id=${ req.query.id };`
+    }else{
+        queryString = `UPDATE "tasklist" SET done=true WHERE id=${ req.query.id };`
+    }
     pool.query( queryString ).then( ( results )=>{
         res.sendStatus( 200 );
     }).catch( ( err )=>{

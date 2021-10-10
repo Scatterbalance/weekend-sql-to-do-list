@@ -7,7 +7,8 @@ function OnReady(){
     getTasks ();
     $('#addButton').on('click', add);
     $('#taskOut').on('click', '.deleteTaskButton', deleteTask)
-    $('#taskOut').on('click', '.completeTaskButton', completeTask)
+    $('#taskOut').on('click', '.completeTaskButton', completeTask) 
+    $('#taskOut').on('click', '.incompleteTaskButton', incompleteTask)
 
 
 
@@ -45,12 +46,35 @@ function add(){
 
 } //end add
 
+function incompleteTask(){
+    console.log( 'in taskList:', $( this ).data( 'id') );
+let objectToSend = {
+    done: true
+}
 
-function completeTask(){
-    console.log( 'in taskList:', $( this ).data( 'id' ) );
     $.ajax({
         method: 'PUT',
         url: '/taskList?id=' + $( this ).data( 'id' ),
+        data: objectToSend
+    }).then( function( response ){
+        console.log( 'back from update:', response );
+        getTasks();
+    }).catch( function( err ){
+        console.log( err );
+        alert( 'error updating task' );
+    })
+}
+
+function completeTask(){
+    console.log( 'in taskList:', $( this ).data( 'id') );
+let objectToSend = {
+    done: false
+}
+
+    $.ajax({
+        method: 'PUT',
+        url: '/taskList?id=' + $( this ).data( 'id' ),
+        data: objectToSend
     }).then( function( response ){
         console.log( 'back from update:', response );
         getTasks();
@@ -96,12 +120,13 @@ function getTasks(){
             
             if( response[i].done ){
                 //task is complete
-               appendCode += `<li>${response[i].task}     <button type ="button" class = "deleteTaskButton" data-id="${ response[i].id }" >Remove</button></li>`
+               appendCode += `<li><em class = "taskComplete">${response[i].task}</em>     <button type ="button" class = "incompleteTaskButton" data-id="${ response[i].id }" >Mark incomplete</button>
+               <button type ="button" class = "deleteTaskButton" data-id="${ response[i].id }" >Remove</button></li>`
 
             }else{
 
                 //task is not complete
-                appendCode += `<li>${response[i].task}     <button type ="button" class = "completeTaskButton" data-id="${ response[i].id }" >complete?</button>
+                appendCode += `<li>${response[i].task}  <button type ="button" class = "completeTaskButton" data-id="${ response[i].id }" >Mark complete</button>
                 <button type ="button" class = "deleteTaskButton" data-id="${ response[i].id }" >Remove</button></li>`
 
             }
